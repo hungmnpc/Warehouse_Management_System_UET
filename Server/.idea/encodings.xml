@@ -4,6 +4,9 @@
     <file url="file://$PROJECT_DIR$/AuthService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/WMSEureka/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/api-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/authservice/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/authservice/target/generated-sources/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/common-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/config-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/discovery/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/import-service/src/main/java" charset="UTF-8" />

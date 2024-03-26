@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="api-gateway" />
         <module name="config-server" />
-        <module name="product-service" />
+        <module name="common" />
+        <module name="authservice" />
         <module name="discovery" />
+        <module name="api-gateway" />
+        <module name="product-service" />
         <module name="import-service" />
       </profile>
     </annotationProcessing>
@@ -23,6 +25,8 @@
       <module name="AuthService" options="-parameters" />
       <module name="WMSEureka" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
+      <module name="authservice" options="-parameters" />
+      <module name="common" options="-parameters" />
       <module name="config-server" options="-parameters" />
       <module name="discovery" options="-parameters" />
       <module name="import-service" options="-parameters" />

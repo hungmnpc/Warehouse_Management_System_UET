@@ -1,26 +1,13 @@
-
 spring:
   application:
     name: product-service
-  datasource:
-    url: jdbc:h2:mem:test
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: password
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
   config:
     import: optional:configserver:http://localhost:8888
-eureka:
-  instance:
-    hostname: localhost
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka
-
-server:
-  port: 8090
 
 application:
   config:
-    imports-url: http://localhost:8222/import
+    imports-url:
+      host: http://localhost:8222/import
+    common_service-url:
+      host: http://localhost:8008
+      random-UUID: /common-utils/random-UUID

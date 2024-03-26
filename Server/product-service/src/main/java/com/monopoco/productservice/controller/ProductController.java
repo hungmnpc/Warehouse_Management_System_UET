@@ -1,5 +1,6 @@
 package com.monopoco.productservice.controller;
 
+import com.monopoco.productservice.client.CommonClient;
 import com.monopoco.productservice.client.ImportClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,12 @@ public class ProductController {
     @Autowired
     private ImportClient client;
 
+    @Autowired
+    private CommonClient commonClient;
+
 
     @GetMapping("")
     ResponseEntity<?> test() {
-        return ResponseEntity.ok(client.test());
+        return ResponseEntity.ok(commonClient.getRandomUUID());
     }
 }

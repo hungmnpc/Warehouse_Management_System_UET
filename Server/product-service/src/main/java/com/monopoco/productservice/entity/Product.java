@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 
+import java.util.UUID;
+
 /**
  * Created by: hungdinh
  * Date: 04/03/2024
@@ -18,11 +20,10 @@ import org.hibernate.annotations.Comment;
 @ToString
 @Builder
 @Table(name = "product")
-public class Product {
+public class Product extends AuditEntity<UUID> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @Column(name = "product_code")
     @Comment("Mã hàng hóa")
@@ -31,6 +32,8 @@ public class Product {
     @Column(name = "product_name")
     @Comment("Tên hàng hóa")
     private String productName;
+
+
 
     // More...//
 }

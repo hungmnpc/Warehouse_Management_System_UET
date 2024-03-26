@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * Project: Server
  */
 
-@FeignClient(name = "import-service", url = "${application.config.imports-url}")
+@FeignClient(name = "import-service", url = "${application.config.imports-url.host}")
 public interface ImportClient {
 
     @GetMapping("")

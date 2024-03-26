@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: auth-service
+  config:
+    import: optional:configserver:http://localhost:8888
+
+secret: monopoco123
+superToken: hungdzqua
+accessTokenExp: 86400000 # 24h
