@@ -1,7 +1,13 @@
 import React from "react";
-import { DataProvider } from "@refinedev/core";
+import { BaseRecord, DataProvider } from "@refinedev/core";
+import axios from "axios";
+import { ACCESS_TOKEN } from "./authProvider";
+import { IResponsePagination, IUser } from "./utils/interfaces";
 
 export const dataProvider = (url: string): DataProvider => ({
+
+    
+
   getOne: async ({ id, resource }) => {
     const response = await fetch(`${url}/${resource}/${id}`);
       const data = await response.json();
@@ -21,8 +27,23 @@ export const dataProvider = (url: string): DataProvider => ({
   deleteOne: async () => {
       throw new Error("Not implemented");
   },
-  getList: async () => {
-      throw new Error("Not implemented");
+
+  getList: async ({ resource, pagination, filters, sorters, meta }) => {
+    console.log("call 1")
+    const request = axios.create({
+        baseURL: `${url}`,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem(ACCESS_TOKEN)
+        },
+    });
+    const response = await request.get(url.endsWith('/') ? resource : `/${resource}`);
+    const data:IResponsePagination<any> = await response.data;
+    console.log("datasd", data)
+    return {
+        data: data.data.data,
+        total: data.data.dataCount
+    };
   },
   getApiUrl: () => url,
 

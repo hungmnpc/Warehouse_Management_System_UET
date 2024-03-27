@@ -71,7 +71,16 @@ export const authProvider: AuthBindings = {
       redirectTo: "/login",
     };
   },
-  getPermissions: async () => null,
+  getPermissions: async () => {
+    const accessToken = localStorage.getItem(ACCESS_TOKEN);
+    if (accessToken) {
+      const decode = jwtDecode<JWTPayloadCustom>(accessToken);
+      console.log(decode)
+
+      return decode.roles;
+    }
+    
+  },
   getIdentity: async () => {
     const token = localStorage.getItem(TOKEN_KEY);
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
