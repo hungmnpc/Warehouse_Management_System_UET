@@ -5,6 +5,7 @@ import com.monopoco.authservice.request.LoginRequest;
 import com.monopoco.authservice.request.UserRequest;
 import com.monopoco.authservice.response.CommonResponse;
 import com.monopoco.authservice.response.PageResponse;
+import com.monopoco.authservice.response.model.DropDown;
 import com.monopoco.authservice.response.model.LoginResponse;
 import com.monopoco.authservice.response.model.RoleDTO;
 import com.monopoco.authservice.response.model.UserDTO;
@@ -34,6 +35,8 @@ public interface UserService {
      */
     public CommonResponse<?> deleteUser(UUID userId);
 
+    public CommonResponse<UserDTO> getUser(UUID userId);
+
     /**
      *
      * @param userID
@@ -51,4 +54,7 @@ public interface UserService {
     public void setRoleForUser(String username, String roleName);
 
     public CommonResponse<PageResponse<List<UserDTO>>> getAllUser(UserFilter filter, Pageable pageable);
+
+    public CommonResponse<PageResponse<List<DropDown<UUID, String>>>> getRoleDropDown();
+
 }

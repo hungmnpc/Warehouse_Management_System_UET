@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
+import java.util.UUID;
+
+import static org.springframework.http.ResponseEntity.internalServerError;
 
 /**
  * Project: Server
@@ -52,7 +55,22 @@ public class AuthController {
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            return ResponseEntity.internalServerError().body("Server xảy ra lỗi");
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/dropdown/roles")
+    public ResponseEntity<?> getDropDownRole() {
+        try {
+            CommonResponse<?> response = userService.getRoleDropDown();
+            if (response != null) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().build();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
         }
     }
 
@@ -67,7 +85,22 @@ public class AuthController {
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            return ResponseEntity.internalServerError().body("Server xảy ra lỗi");
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        try {
+            CommonResponse<?> response = userService.deleteUser(id);
+            if (response.isSuccess()) {
+                return ResponseEntity.ok(response);
+            } else {
+                return ResponseEntity.badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
         }
     }
 
@@ -82,7 +115,7 @@ public class AuthController {
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            return ResponseEntity.internalServerError().body("Server xảy ra lỗi");
+            return internalServerError().body("Server xảy ra lỗi");
         }
     }
 
@@ -98,7 +131,22 @@ public class AuthController {
 
         } catch (Exception exception) {
             exception.printStackTrace();
-            return ResponseEntity.internalServerError().body("Server xảy ra lỗi");
+            return internalServerError().body("Server xảy ra lỗi");
         }
     }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> getUserById(
+            @PathVariable UUID id
+            ) {
+        try {
+            CommonResponse<UserDTO> response = userService.getUser(id);
+            return ResponseEntity.ok(response);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+
 }

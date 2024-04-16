@@ -20,23 +20,23 @@ public class CommonResponse<T> {
     }
 
     public CommonResponse badRequest(String message){
-        this.result = new Result().errorCode("400").message(message).isOk(true);
+        this.result = new Result().errorCode("400").message(message).isOk(false);
         return this;
     }
 
     public CommonResponse badRequest(){
-        this.result = new Result().errorCode("400").message("Bad Request").isOk(true);
+        this.result = new Result().errorCode("400").message("Bad Request").isOk(false);
         return this;
     }
 
 
     public CommonResponse notFound(String message){
-        this.result = new Result().errorCode("404").message(message).isOk(true);
+        this.result = new Result().errorCode("404").message(message).isOk(false);
         return this;
     }
 
     public CommonResponse notFound(){
-        this.result = new Result().errorCode("404").message("Not Found").isOk(true);
+        this.result = new Result().errorCode("404").message("Not Found").isOk(false);
         return this;
     }
 

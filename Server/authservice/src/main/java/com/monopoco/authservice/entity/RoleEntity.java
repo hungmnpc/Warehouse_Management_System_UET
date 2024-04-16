@@ -31,4 +31,8 @@ public class RoleEntity extends AuditEntity<UUID> {
 
     @OneToMany(mappedBy = "role", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private List<UserEntity> users;
+
+    private Integer level;
+
+    private String displayName;
 }

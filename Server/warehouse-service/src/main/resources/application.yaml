@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: warehouse-service
+  config:
+    import: optional:configserver:http://localhost:8888
+
+secret: monopoco123
+superToken: hungdzqua
+accessTokenExp: 86400000 # 24h
+historyURL: http://localhost:8222/histories
+superadminID: 1c51b706-5253-4425-9b77-deeb5969a3e6

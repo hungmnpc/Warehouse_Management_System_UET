@@ -11,3 +11,8 @@ application:
     common_service-url:
       host: http://localhost:8008
       random-UUID: /common-utils/random-UUID
+
+
+secret: monopoco123
+superToken: hungdzqua
+accessTokenExp: 86400000 # 24h

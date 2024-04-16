@@ -12,11 +12,13 @@ import com.monopoco.authservice.request.UserRequest;
 import com.monopoco.authservice.response.CommonResponse;
 import com.monopoco.authservice.response.PageResponse;
 import com.monopoco.authservice.response.UserPrincipal;
+import com.monopoco.authservice.response.model.DropDown;
 import com.monopoco.authservice.response.model.LoginResponse;
 import com.monopoco.authservice.response.model.RoleDTO;
 import com.monopoco.authservice.response.model.UserDTO;
 import com.monopoco.authservice.util.CommonUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +33,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Project: Server
@@ -46,6 +46,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@Transactional
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             if (user != null) {
                 return new CommonResponse<>().badRequest("Username đã tồn tại");
             } else {
-                RoleEntity role =roleRepo.findById(request.getRoleId()).orElse(null);
+                RoleEntity role =roleRepo.findById(request.getRole().getKey()).orElse(null);
                 if (role != null) {
                     String salt = CommonUtil.generateRandomString(16);
                     String hashPassword = CommonUtil.hashPassword(request.getPassword(), salt);
@@ -103,6 +104,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                             .id(CommonUtil.generateRandomUUID())
                             .passwordSalt(salt)
                             .role(role)
+                            .warehouseId(request.getWarehouse() == null ? null : request.getWarehouse().getKey())
                             .build();
                     UserEntity savedUserEntity = userRepo.save(newUser);
                     return new CommonResponse<>().success("Tạo mới user thành công").data(UserDTO.builder()
@@ -148,8 +150,71 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public CommonResponse<?> deleteUser(UUID userId) {
+    public CommonResponse<PageResponse<List<DropDown<UUID, String>>>> getRoleDropDown() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            String roleName = auth.getAuthorities().stream().findFirst().get().toString();
+            Integer level = roleRepo.getLevel(roleName);
+            List<RoleEntity> roleList = roleRepo.findRoleEntitiesByIsDeletedIsFalseAndLevelGreaterThanOrderByLevelAsc(level);
+            if (roleList.isEmpty()) {
+                return new CommonResponse<>().success().data(new PageResponse<List<DropDown<UUID, String>>>()
+                        .data(new ArrayList<>())
+                        .dataCount(0L)
+                        .pageNumber(0)
+                        .pageSize(0));
+            } else {
+                List<DropDown<UUID, String>> roleDropDown = roleList.stream().map((role) -> {
+                    return new DropDown<UUID, String>(role.getId(), role.getDisplayName());
+                }).toList();
+
+                return new CommonResponse<>().success().data(new PageResponse<List<DropDown<UUID, String>>>()
+                        .data(roleDropDown)
+                        .dataCount(roleDropDown.stream().count())
+                        .pageNumber(0)
+                        .pageSize(0));
+            }
+        }
         return null;
+    }
+
+    @Override
+    public CommonResponse<?> deleteUser(UUID userId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            String roleName = auth.getAuthorities().stream().findFirst().get().toString();
+            Integer level = roleRepo.getLevel(roleName);
+            UserEntity deleteUser = userRepo.findById(userId).orElse(null);
+            if (deleteUser != null) {
+                if (deleteUser.getRole().getLevel() > level) {
+                    deleteUser.setIsDeleted(true);
+                    return new CommonResponse<>().success("Delete user successfully");
+                } else {
+                    return new CommonResponse<>().badRequest("You can't delete user with higher role");
+                }
+            } else {
+                return new CommonResponse<>().notFound("Can't find user");
+            }
+        }
+        return new CommonResponse<>().badRequest();
+    }
+
+    @Override
+    public CommonResponse<UserDTO> getUser(UUID userId) {
+        UserEntity userEntity = userRepo.findByIsDeletedIsFalseAndId(userId).orElse(null);
+        if (userEntity != null) {
+            return new CommonResponse<>().success().data(UserDTO.builder()
+                    .id(userEntity.getId())
+                    .userName(userEntity.getUserName())
+                    .firstName(userEntity.getFirstName())
+                    .lastName(userEntity.getLastName())
+                    .createdBy(userEntity.getCreatedBy())
+                    .createdDate(userEntity.getCreatedDate())
+                    .lastModifiedBy(userEntity.getLastModifiedBy())
+                    .lastModifiedDate(userEntity.getLastModifiedDate())
+                    .warehouseId(userEntity.getWarehouseId())
+                    .build());
+        }
+        return new CommonResponse<>().notFound("User not found");
     }
 
     @Override
@@ -182,14 +247,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public CommonResponse<PageResponse<List<UserDTO>>> getAllUser(UserFilter filter, Pageable pageable) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String roleName = ((ArrayList<SimpleGrantedAuthority>)authentication.getAuthorities()).get(0).getAuthority();
-        auth.getAuthorities().stream().forEach(a -> {
-            System.out.println(a.getAuthority());
-        });
         if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"))) {
             PageResponse<List<UserDTO>> response = userRepositoryDSL.searchOrder(filter, pageable);
             return new CommonResponse<>().success().data(response);
         }
         return new CommonResponse<>().badRequest("Không đủ quyền truy cập");
     }
+
+
 }

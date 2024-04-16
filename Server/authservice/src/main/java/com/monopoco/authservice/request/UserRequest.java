@@ -1,6 +1,7 @@
 package com.monopoco.authservice.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.monopoco.authservice.response.model.DropDown;
 import lombok.*;
 
 import java.util.UUID;
@@ -20,18 +21,20 @@ import java.util.UUID;
 @Builder
 public class UserRequest {
 
-    @JsonProperty("first_name")
+//    @JsonProperty("first_name")
     private String firstName;
 
-    @JsonProperty("last_name")
+//    @JsonProperty("last_name")
     private String lastName;
 
-    @JsonProperty("user_name")
+//    @JsonProperty("user_name")
     private String userName;
 
-    @JsonProperty("password")
+//    @JsonProperty("password")
     private String password;
 
-    @JsonProperty("role_id")
-    private UUID roleId;
+//    @JsonProperty("role_id")
+    private DropDown<UUID, String> role;
+
+    private DropDown<UUID, String> warehouse;
 }

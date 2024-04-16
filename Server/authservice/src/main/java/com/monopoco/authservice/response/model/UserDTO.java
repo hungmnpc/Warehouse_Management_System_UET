@@ -31,6 +31,8 @@ public class UserDTO extends AuditDTO{
 
     private String roleName;
 
+    private UUID warehouseId;
+
     @QueryProjection
     public UserDTO(String createdBy, LocalDateTime createdDate, String lastModifiedBy, LocalDateTime lastModifiedDate, Boolean isDeleted, UUID id, String firstName, String lastName, String userName, String roleName) {
         super(createdBy, createdDate, lastModifiedBy, lastModifiedDate, isDeleted);

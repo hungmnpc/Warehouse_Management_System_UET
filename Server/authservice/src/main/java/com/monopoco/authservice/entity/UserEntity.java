@@ -43,4 +43,7 @@ public class UserEntity extends AuditEntity<UUID>{
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "role_id")
     private RoleEntity role;
+
+    @Column(name = "warehouse_id")
+    private UUID warehouseId;
 }

@@ -1,12 +1,23 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Slide, Tooltip } from "@mui/material"
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    IconButton,
+    Slide,
+    Tooltip,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React from "react";
-import { TransitionProps } from "@mui/material/transitions";
+import React from 'react';
+import { TransitionProps } from '@mui/material/transitions';
 import AnnouncementIcon from '@mui/icons-material/Announcement';
-import { ConfirmDialog } from "../dialog";
+import { ConfirmDialog } from '../dialog';
 
 interface DeleteButtonProps {
-    onDelete: () => void
+    onDelete: () => void;
+    disabled?: false | boolean;
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -20,22 +31,24 @@ const Transition = React.forwardRef(function Transition(
 
 const titleDeleteConfirm = () => {
     return (
-        <div style={{
-            display: "flex",
-            alignItems: "center",
-            fontSize: '50px',
-            justifyContent: "center",
-            gap: "10px"
-        }}>
+        <div
+            style={{
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: '50px',
+                justifyContent: 'center',
+                gap: '10px',
+            }}
+        >
             <AnnouncementIcon fontSize="inherit" color="error" />
-            <h2 style={{ fontSize: "25px" }}>Confirm Delete</h2>
+            <h2 style={{ fontSize: '25px' }}>Confirm Delete</h2>
         </div>
-    )
-}
+    );
+};
 
 const contentDeleteConfirm = () => {
-    return  'Are you sure you want to delete?'
-}
+    return 'Are you sure you want to delete?';
+};
 export const DeleteButtonIcon = (props: DeleteButtonProps) => {
     const [open, setOpen] = React.useState(false);
 
@@ -46,10 +59,15 @@ export const DeleteButtonIcon = (props: DeleteButtonProps) => {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleNegative = () => {
+        props.onDelete();
+        setOpen(false);
+    };
     return (
         <React.Fragment>
             <Tooltip title="Delete">
-                <IconButton onClick={handleClickOpen} aria-label="fingerprint" color="error">
+                <IconButton disabled={props.disabled} onClick={handleClickOpen} aria-label="fingerprint" color="error">
                     <DeleteIcon />
                 </IconButton>
             </Tooltip>
@@ -59,15 +77,14 @@ export const DeleteButtonIcon = (props: DeleteButtonProps) => {
                 negativeText="Yes, Delete"
                 positiveText="No, Cancel"
                 positiveHandle={handleClose}
-                negativeHandle={props.onDelete}
+                negativeHandle={handleNegative}
                 transition={Transition}
                 content={contentDeleteConfirm()}
                 title={titleDeleteConfirm()}
-
             />
         </React.Fragment>
-    )
-}
+    );
+};
 
 export const DeleteButton = (props: DeleteButtonProps) => {
     const [open, setOpen] = React.useState(false);
@@ -82,10 +99,17 @@ export const DeleteButton = (props: DeleteButtonProps) => {
     return (
         <React.Fragment>
             <Tooltip title="Delete">
-                <Button style={{
-                    fontWeight:700,
-                    textTransform: 'none'
-                }} startIcon={<DeleteIcon />} variant="contained" onClick={handleClickOpen} aria-label="delete" color="error">
+                <Button
+                    style={{
+                        fontWeight: 700,
+                        textTransform: 'none',
+                    }}
+                    startIcon={<DeleteIcon />}
+                    variant="contained"
+                    onClick={handleClickOpen}
+                    aria-label="delete"
+                    color="error"
+                >
                     Delete
                 </Button>
             </Tooltip>
@@ -99,8 +123,7 @@ export const DeleteButton = (props: DeleteButtonProps) => {
                 transition={Transition}
                 content={contentDeleteConfirm()}
                 title={titleDeleteConfirm()}
-
             />
         </React.Fragment>
-    )
-}
+    );
+};

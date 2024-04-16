@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static java.util.Arrays.stream;
+import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -41,6 +42,11 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
     private Environment env;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.error(request.getServletPath());
+        log.error(request.getHeader(ACCEPT));
+        log.error(request.getHeader(AUTHORIZATION));
+
+
         if (request.getServletPath().equals("/login")) {
             filterChain.doFilter(request, response);
         } else {
