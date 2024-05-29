@@ -103,6 +103,11 @@
 			<version>${querydsl.version}</version>
 			<classifier>jakarta</classifier>
 		</dependency>
+		<dependency>
+			<groupId>com.monopoco</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

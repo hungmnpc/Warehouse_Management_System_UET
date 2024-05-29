@@ -1,9 +1,7 @@
 package com.monopoco.inventory.clients;
 
-import com.monopoco.inventory.response.CommonResponse;
+import com.monopoco.common.model.CommonResponse;
 import com.monopoco.inventory.response.model.UserDTO;
-import feign.Headers;
-import feign.RequestLine;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;

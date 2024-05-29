@@ -1,9 +1,9 @@
 package com.monopoco.history.service;
 
+import com.monopoco.common.model.HistoryEvent;
 import com.monopoco.history.entity.History;
 import com.monopoco.history.response.CommonResponse;
 import com.monopoco.history.response.PageResponse;
-import com.monopoco.history.response.model.HistoryDTO;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -14,6 +14,6 @@ public interface HistoryService {
 
     PageResponse<History> getPage(Query query, Pageable pageable);
 
-    CommonResponse<?> save(HistoryDTO historyDTO);
+    CommonResponse<?> save(HistoryEvent historyEvent);
 
 }

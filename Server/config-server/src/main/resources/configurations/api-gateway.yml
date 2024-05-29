@@ -15,10 +15,10 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: import-service
-          uri: http://localhost:8070
+        - id: inventory-service
+          uri: http://localhost:8030
           predicates:
-            - Path=/import/**
+            - Path=/inventories/**
         - id: product-service
           uri: http://localhost:8090
           predicates:
@@ -35,6 +35,14 @@ spring:
           uri: http://localhost:8010
           predicates:
             - Path=/histories/**
+        - id: supplier-service
+          uri: http://localhost:8060
+          predicates:
+            - Path=/suppliers/**
+        - id: purchase-order-service
+          uri: http://localhost:8050
+          predicates:
+            - Path=/purchase_orders/**
 eureka:
   instance:
     hostname: localhost

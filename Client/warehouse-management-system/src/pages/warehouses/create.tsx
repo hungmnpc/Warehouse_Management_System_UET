@@ -54,6 +54,14 @@ export const WarehouseCreate = () => {
         refineCoreProps: {
             resource: '',
             dataProviderName: 'warehouses',
+            errorNotification(error: any, values, resource) {
+                console.log('error', error);
+                return {
+                    message: `Create new warehouse unsuccessful`,
+                    description: error.response.data.result.message,
+                    type: 'error',
+                };
+            },
         },
     });
 

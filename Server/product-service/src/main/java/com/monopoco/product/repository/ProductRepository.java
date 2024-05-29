@@ -19,6 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Optional<Product> findByIsDeletedIsFalseAndProductId(UUID productId);
 
+    Optional<Product> findByIsDeletedIsFalseAndBarcode(String barcode);
+
     @Query("select distinct po.unit from Product po")
     List<String> getUnit();
 }

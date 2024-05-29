@@ -1,30 +1,23 @@
 package com.monopoco.warehouse.controller;
 
-import com.monopoco.warehouse.clients.HistoryClient;
-import com.monopoco.warehouse.clients.dto.HistoryDTO;
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.warehouse.area.*;
 import com.monopoco.warehouse.filter.WarehouseFilter;
 import com.monopoco.warehouse.request.WarehouseRequest;
 import com.monopoco.warehouse.request.WarehouseTypeRequest;
-import com.monopoco.warehouse.response.CommonResponse;
-import com.monopoco.warehouse.response.model.UserDTO;
 import com.monopoco.warehouse.response.model.WarehouseDTO;
 import com.monopoco.warehouse.service.WarehouseService;
-import com.monopoco.warehouse.util.CommonUtil;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.POST;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.*;
@@ -47,8 +40,6 @@ public class WarehouseController {
     @Autowired
     private WarehouseService warehouseService;
 
-    @Autowired
-    private HistoryClient historyClient;
 
     @GetMapping("")
     public ResponseEntity<?> getAllWarehouse(
@@ -78,18 +69,6 @@ public class WarehouseController {
         try {
             CommonResponse<WarehouseDTO> response = warehouseService.createNewWarehouse(request);
             if (response.isSuccess()) {
-                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                UUID userID = (UUID) ((Map<String, Object>) auth.getPrincipal()).get("id");
-                historyClient.pushHistory(HistoryDTO.builder()
-                        .title("Create new warehouse")
-                        .type("create".toUpperCase())
-                        .agentId(response.getData().getId())
-                        .user(
-                                UserDTO.builder().id(userID).build()
-                        ).agentType("warehouse")
-                        .description(new HashMap<>() {{
-                            put("description", String.format("Warehouse: %s was created.", request.getWarehouseName()));
-                        }}).build());
                 return ResponseEntity.created(URI.create(httpServletRequest.getRequestURI())).body(response);
             } else {
                 return ResponseEntity.badRequest().body(response);
@@ -170,6 +149,205 @@ public class WarehouseController {
             CommonResponse<?> response = warehouseService.getWarehouseById(id);
             if (response.isSuccess()) {
                 return ok().body(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/{warehouseId}/purchase_orders/count")
+    public ResponseEntity<?> getCountPOWH(
+            @PathVariable UUID warehouseId
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.countPoWH(warehouseId);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/{warehouseId}/goods_received/count")
+    public ResponseEntity<?> getCountGRWH(
+            @PathVariable UUID warehouseId
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.countGCWH(warehouseId);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/areas/groups")
+    public ResponseEntity<?> getAreaGroup() {
+        try {
+            CommonResponse<?> response = warehouseService.getAreaGroups();
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @PostMapping("/{warehouseId}/areas")
+    public ResponseEntity<?> createNewAreaInWH(
+            @PathVariable UUID warehouseId,
+            @RequestBody CreateArea createArea
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.creatArea(warehouseId, createArea);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @PostMapping("/area_groups")
+    public ResponseEntity<?> createNewAreaGroup(@RequestBody CreateAreaGroup createAreaGroup) {
+        try {
+            CommonResponse<?> response = warehouseService.createAreaGroup(createAreaGroup);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+
+    @GetMapping("/{warehouseId}/areas")
+    public ResponseEntity<?> getAllAreaInWH(
+            @PathVariable UUID warehouseId
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.getAllAreaInWarehouse(warehouseId);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @PostMapping("/areas/{areaId}/aisles")
+    public ResponseEntity<?> createAisleWH (
+            @PathVariable UUID areaId,
+            @RequestBody CreateAisleWarehouse createAisleWarehouse
+            ) {
+        try {
+            CommonResponse<?> response = warehouseService.createAisleWarehouse(areaId, createAisleWarehouse);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/areas/{areaId}/aisles")
+    public ResponseEntity<?> getAislesInArea(
+            @PathVariable UUID areaId
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.getAisleInArea(areaId);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/areas/aisles/{aislesId}/bins")
+    public ResponseEntity<?> getBinLocation(
+            @PathVariable UUID aislesId
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.getBinsInAisleLocation(aislesId);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @GetMapping("/bins/barcode/{barcode}")
+    public ResponseEntity<?> getBinLocationByBarcode(
+            @PathVariable String barcode,
+            @RequestParam(required = true) UUID warehouseId
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.getBinLocationByBarCode(barcode, warehouseId);
+            return ok(response);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @PostMapping("/bins/{binId}/config")
+    public ResponseEntity<?> configBin(
+            @PathVariable UUID binId,
+            @RequestBody BinConfigurationDTO request
+    ) {
+        try {
+            CommonResponse<?> response = warehouseService.configBin(request, binId);
+            if (response.isSuccess()) {
+                return ok(response);
+            } else {
+                return badRequest().body(response);
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return internalServerError().body("Server xảy ra lỗi");
+        }
+    }
+
+    @PutMapping("/bins/{binId}/occupied")
+    public ResponseEntity<?> updateOccupied(@PathVariable UUID binId, @RequestBody Boolean occupied) {
+        try {
+            CommonResponse<?> response = warehouseService.updateOccupiedBin(occupied, binId);
+            if (response.isSuccess()) {
+                return ok(response);
             } else {
                 return badRequest().body(response);
             }

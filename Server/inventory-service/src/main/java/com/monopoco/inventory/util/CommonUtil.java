@@ -6,13 +6,16 @@ import com.monopoco.inventory.response.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -89,5 +92,26 @@ public class CommonUtil {
                 .withClaim("id", userPrincipal.getId().toString())
                 .sign(algorithm);
         return accessToken;
+    }
+
+    public static PrincipalUser getRecentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            UUID userID = (UUID) ((Map<String, Object>) auth.getPrincipal()).get("id");
+            String username = (String) ((Map<String, Object>) auth.getPrincipal()).get("username");
+            UUID warehouseId = (UUID) ((Map<String, Object>) auth.getPrincipal()).get("warehouseId");
+            return PrincipalUser.builder()
+                    .userId(userID)
+                    .username(username)
+                    .warehouseId(warehouseId)
+                    .build();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return PrincipalUser.builder()
+                    .userId(UUID.randomUUID())
+                    .username("anonymous")
+                    .warehouseId(null)
+                    .build();
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.monopoco.authservice.response;
 
 import com.monopoco.authservice.entity.UserEntity;
-import com.monopoco.authservice.response.model.UserDTO;
+import com.monopoco.common.model.user.UserDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

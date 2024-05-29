@@ -13,6 +13,9 @@
     <file url="file://$PROJECT_DIR$/import-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/inventory-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/product-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/purchase-order-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/socket/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/supplier-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/warehouse-service/src/main/java" charset="UTF-8" />
   </component>
 </project>

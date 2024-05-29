@@ -3,20 +3,19 @@ package com.monopoco.authservice.util;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.monopoco.authservice.response.UserPrincipal;
-import com.monopoco.authservice.response.model.UserDTO;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.net.http.HttpRequest;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -81,7 +80,7 @@ public class CommonUtil {
         return hashPassword_.equals(hashPassword);
     }
 
-    public static String generateAccessToken(UserPrincipal userPrincipal, String secret, long timeExp, HttpServletRequest request) {
+    public static String generateAccessToken(UserPrincipal userPrincipal, String secret, long timeExp, HttpServletRequest request, UUID warehouseId) {
         Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
         String accessToken = JWT.create()
                 .withSubject(userPrincipal.getUsername())
@@ -91,7 +90,28 @@ public class CommonUtil {
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .withClaim("fullName", userPrincipal.getFullName())
                 .withClaim("id", userPrincipal.getId().toString())
+                .withClaim("warehouseId", warehouseId != null ? warehouseId.toString() : null)
                 .sign(algorithm);
         return accessToken;
+    }
+    public static PrincipalUser getRecentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            UUID userID = (UUID) ((Map<String, Object>) auth.getPrincipal()).get("id");
+            String username = (String) ((Map<String, Object>) auth.getPrincipal()).get("username");
+            UUID warehouseId = (UUID) ((Map<String, Object>) auth.getPrincipal()).get("warehouseId");
+            return PrincipalUser.builder()
+                    .userId(userID)
+                    .username(username)
+                    .warehouseId(warehouseId)
+                    .build();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return PrincipalUser.builder()
+                    .userId(UUID.randomUUID())
+                    .username("anonymous")
+                    .warehouseId(null)
+                    .build();
+        }
     }
 }

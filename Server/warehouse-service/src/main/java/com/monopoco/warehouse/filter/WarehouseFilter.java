@@ -2,6 +2,8 @@ package com.monopoco.warehouse.filter;
 
 import lombok.*;
 
+import java.util.UUID;
+
 /**
  * Project: Server
  * Package: com.monopoco.warehouse.filter
@@ -17,6 +19,8 @@ import lombok.*;
 @ToString
 @Builder
 public class WarehouseFilter {
+
+    private UUID warehouseId;
 
     private String warehouseName;
 

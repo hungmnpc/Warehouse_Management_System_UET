@@ -5,15 +5,20 @@ import style from './TimeLine.module.scss';
 import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useOne } from '@refinedev/core';
 
 const cx = classNames.bind(style);
 interface TimelineItemProps {
     time: any;
     title: string;
-    description: string;
+    description: any;
+    type: 'ADD' | 'CREATE' | 'DELETE' | 'UPDATE';
+    agentType: 'purchase order' | 'warehouse';
 }
 
-function TimelineItem({ time, title, description }: TimelineItemProps) {
+function TimelineItem({ time, title, description, type, agentType }: TimelineItemProps) {
+    console.log('description', description);
+
     return (
         <Accordion>
             <AccordionSummary expandIcon={<ArrowDownwardIcon />} aria-controls="panel1-content" id="panel1-header">
@@ -24,7 +29,11 @@ function TimelineItem({ time, title, description }: TimelineItemProps) {
                 </div>
                 {/* </Typography> */}
             </AccordionSummary>
-            <AccordionDetails>{description}</AccordionDetails>
+            {description.map((data: any, index: any) => (
+                <AccordionDetails key={index}>
+                    {type === 'UPDATE' ? `${data.key} => ${data.value}` : `${data.key} ${data.value}`}
+                </AccordionDetails>
+            ))}
         </Accordion>
     );
 }

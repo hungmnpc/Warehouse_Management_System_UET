@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:name=".Classes.ApplicationClass"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/wms"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@drawable/wms"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MusicMP4"
+        android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="31">
+        <activity
+            android:name=".Activities.PickActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.StockPoAct"
+            android:exported="false"
+            android:parentActivityName=".Activities.PurchaseOrderActivity" />
+        <activity
+            android:name=".Activities.PurchaseOrderDetailAct"
+            android:exported="false"
+            android:parentActivityName=".Activities.PurchaseOrderActivity" />
+        <activity
+            android:name=".Activities.PurchaseOrderActivity"
+            android:exported="false"
+            android:parentActivityName=".Activities.MainActivity" />
+        <activity
+            android:name=".Activities.SignInActivity"
+            android:exported="false"
+            android:label="@string/title_activity_sign_in"
+            android:theme="@style/Theme.MusicMP4"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Activities.CaptureAct"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme.MusicMP4" />
+        <activity
+            android:name=".Activities.SplashActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activities.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MusicMP4">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

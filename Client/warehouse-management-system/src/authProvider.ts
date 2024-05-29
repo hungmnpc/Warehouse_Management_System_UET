@@ -1,6 +1,8 @@
 import { AuthBindings } from '@refinedev/core';
 import { login } from './utils/request';
 import { JwtPayload, jwtDecode } from 'jwt-decode';
+import { UUID } from 'crypto';
+import { resources, resourcesWHM } from './resources';
 
 export const TOKEN_KEY = 'refine-auth';
 export const ACCESS_TOKEN = 'access-token';
@@ -8,6 +10,8 @@ export const ACCESS_TOKEN = 'access-token';
 export interface JWTPayloadCustom extends JwtPayload {
     roles?: string;
     fullName?: string;
+    warehouseId?: UUID;
+    id?: UUID;
 }
 
 export const authProvider: AuthBindings = {
@@ -103,14 +107,16 @@ export const authProvider: AuthBindings = {
 
 const checkTokenExp = (token: string) => {};
 
-const getUserInfoByAccessToken = (accessToken: string) => {
+const getUserInfoByAccessToken = (accessToken: string | null) => {
     if (accessToken) {
         const decode = jwtDecode<JWTPayloadCustom>(accessToken);
-        console.log(decode);
+        console.log('decode', decode);
         if (tokenValid(decode.exp)) {
             return {
                 name: decode.sub,
                 roles: decode.roles,
+                warehouseId: decode.warehouseId,
+                id: decode.id,
             };
         } else {
             localStorage.removeItem('access_token');
@@ -123,4 +129,40 @@ const getUserInfoByAccessToken = (accessToken: string) => {
 const tokenValid = (expiry: any) => {
     const currentDate = Date.now() / 1000;
     return currentDate < expiry;
+};
+
+export const getUserNameCurrently = () => {
+    if (localStorage.getItem(ACCESS_TOKEN) !== null) {
+        return getUserInfoByAccessToken(localStorage.getItem(ACCESS_TOKEN))?.name;
+    }
+
+    return 'anonymous';
+};
+
+export const getUserIdCurrently = () => {
+    if (localStorage.getItem(ACCESS_TOKEN) !== null) {
+        return getUserInfoByAccessToken(localStorage.getItem(ACCESS_TOKEN))?.id;
+    }
+
+    return 'anonymous';
+};
+
+export const getWarehouseIdCurrently = () => {
+    if (localStorage.getItem(ACCESS_TOKEN) !== null) {
+        return getUserInfoByAccessToken(localStorage.getItem(ACCESS_TOKEN))?.warehouseId;
+    }
+
+    return 'anonymous';
+};
+
+export const getResource = () => {
+    if (localStorage.getItem(ACCESS_TOKEN) !== null) {
+        let roles = getUserInfoByAccessToken(localStorage.getItem(ACCESS_TOKEN))?.roles;
+        if (roles?.includes('ROLE_WAREHOUSE_MANAGER')) {
+            return resourcesWHM;
+        } else if (roles?.includes('ROLE_SUPER_ADMIN') || roles?.includes('ROLE_ADMIN')) {
+            return resources;
+        }
+    }
+    return [];
 };

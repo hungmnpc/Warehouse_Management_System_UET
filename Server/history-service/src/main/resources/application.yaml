@@ -3,6 +3,26 @@ spring:
     name: history-service
   config:
     import: optional:configserver:http://localhost:8888
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      bootstrap-servers: localhost:29092
+      group-id: history
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+
+      properties:
+        spring:
+          deserializer:
+            value:
+              delegate:
+                class: org.springframework.kafka.support.serializer.JsonDeserializer
+          json:
+            trusted:
+              packages: "*"
+    topic:
+      name: history
 
 secret: monopoco123
 superToken: hungdzqua

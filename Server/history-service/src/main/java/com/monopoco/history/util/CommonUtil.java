@@ -90,4 +90,20 @@ public class CommonUtil {
                 .sign(algorithm);
         return accessToken;
     }
+
+    public static String EncodingFix(String mismathString) {
+        try {
+            // Convert the string to bytes using Latin-1 (common source of garbling)
+            byte[] bytes = mismathString.getBytes("ISO-8859-1");
+
+            // Decode the bytes to UTF-8
+            String correctedText = new String(bytes, "UTF-8");
+
+            System.out.println(correctedText); // Should output readable text
+            return correctedText;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return mismathString;
+        }
+    }
 }

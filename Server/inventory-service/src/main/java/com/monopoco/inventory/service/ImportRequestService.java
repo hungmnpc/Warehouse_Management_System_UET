@@ -1,11 +1,13 @@
 package com.monopoco.inventory.service;
 
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.inventory.filter.ImportRequestFilter;
 import com.monopoco.inventory.request.ImportRequestBody;
 import com.monopoco.inventory.request.RequestDetail;
-import com.monopoco.inventory.response.CommonResponse;
-import com.monopoco.inventory.response.PageResponse;
 import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
 
 /**
  * Project: Server
@@ -17,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 public interface ImportRequestService {
 
     public CommonResponse<?> pushNewRequest(ImportRequestBody requestBody);
+
+    public CommonResponse<?> createNewImportFromPo(UUID poId);
 
     public boolean createNewImportExportDetail(RequestDetail requestDetail);
 

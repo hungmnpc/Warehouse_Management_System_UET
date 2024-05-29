@@ -1,25 +1,27 @@
 package com.monopoco.product.service;
 
+import com.monopoco.common.factory.HistoryFactory;
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.product.entity.Product;
 import com.monopoco.product.entity.ProductCategory;
 import com.monopoco.product.filter.ProductFilter;
 import com.monopoco.product.repository.ProductCategoryRepository;
 import com.monopoco.product.repository.ProductRepository;
 import com.monopoco.product.repository.ProductRepositoryDSL;
-import com.monopoco.product.response.CommonResponse;
-import com.monopoco.product.response.PageResponse;
 import com.monopoco.product.response.model.DropDown;
 import com.monopoco.product.response.model.ProductCategoryDTO;
 import com.monopoco.product.response.model.ProductDTO;
 import com.monopoco.product.util.CommonUtil;
+import com.monopoco.product.util.PrincipalUser;
 import jakarta.transaction.Transactional;
-import jdk.jfr.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,17 +93,50 @@ public class ProductServiceImpl implements ProductService{
                     .unit(productDTO.getUnit())
                     .sku(productDTO.getSku())
                     .build();
+            product.setBarcode(product.getProductId().toString().replaceAll("-", ""));
             productRepository.save(product);
-            return new CommonResponse<>().success("Tạo mới hàng hóa thành công");
+            PrincipalUser principalUser = CommonUtil.getRecentUser();
+            return new CommonResponse<>().success("Tạo mới hàng hóa thành công").history(
+                    HistoryFactory.createHistoryEventPOST(
+                            principalUser.getUserId(),
+                            principalUser.getUsername(),
+                            product.getProductId(),
+                            "product",
+                            String.format("Created product: %s", product.getProductName())
+                    )
+            );
         } else {
             return new CommonResponse<>().badRequest("Mã hàng hóa hoặc tên hàng hóa đã tồn tại");
         }
     }
 
     @Override
-    public CommonResponse<?> getAllProducts(ProductFilter filter, Pageable pageable) {
-        PageResponse<List<ProductDTO>> response = productRepositoryDSL.searchOrder(filter, pageable);
+    public CommonResponse<?> getAllProducts(ProductFilter filter, Pageable pageable, List<UUID> idNotIn) {
+        PageResponse<List<ProductDTO>> response = productRepositoryDSL.searchOrder(filter, pageable, idNotIn);
         return new CommonResponse<>().success().data(response);
+    }
+
+    @Override
+    public CommonResponse<?> updateProduct(UUID productId, ProductDTO productDTO) {
+        Product product = productRepository.findByIsDeletedIsFalseAndProductId(productId).orElse(null);
+        if (product != null) {
+            product.setProductName(productDTO.getProductName());
+            product.setProductCode(productDTO.getProductCode());
+            product.setProductDescription(productDTO.getProductDescription());
+            product.setBarcode(productDTO.getBarcode());
+            product.setIsPacked(productDTO.getIsPacked());
+            product.setPackedHeight(productDTO.getPackedHeight());
+            product.setPackedDepth(productDTO.getPackedDepth());
+            product.setPackedWidth(productDTO.getPackedWidth());
+            product.setPackedWeight(productDTO.getPackedWeight());
+            product.setRefrigerated(productDTO.getRefrigerated());
+            product.setUnit(productDTO.getUnit());
+            product.setReorderQuantity(productDTO.getReorderQuantity());
+            product.setProductCategoryId(productDTO.getProductCategory().getKey());
+            return new CommonResponse<>().success().data(productId);
+        } else {
+            return new CommonResponse<>().notFound();
+        }
     }
 
     @Override
@@ -148,5 +183,91 @@ public class ProductServiceImpl implements ProductService{
         ProductCategory productCategory = productCategoryRepository.findByIsDeletedIsFalseAndProductCategoryId(categoryId)
                 .orElse(ProductCategory.builder().categoryDescription("No description").build());
         return new CommonResponse<>().success().data(productCategory.getCategoryDescription());
+    }
+
+    @Override
+    public CommonResponse<?> getProductById(UUID id) {
+        Product product = productRepository.findByIsDeletedIsFalseAndProductId(id).orElse(null);
+        if (product != null) {
+            ProductCategory productCategory = productCategoryRepository.findByIsDeletedIsFalseAndProductCategoryId(
+                    product.getProductCategoryId()
+            ).orElse(ProductCategory.builder()
+                    .categoryName("")
+                    .categoryDescription("")
+                    .productCategoryId(null)
+                    .build());
+            return new CommonResponse<>().success().data(ProductDTO.builder()
+                    .productId(product.getProductId())
+                    .productCode(product.getProductCode())
+                    .productName(product.getProductName())
+                    .sku(product.getSku())
+                    .barcode(product.getBarcode())
+                    .isPacked(product.getIsPacked())
+                    .packedDepth(product.getPackedDepth())
+                    .packedHeight(product.getPackedHeight())
+                    .packedWidth(product.getPackedWidth())
+                    .packedWeight(product.getPackedWeight())
+                    .productDescription(product.getProductDescription())
+                    .unit(product.getUnit())
+                    .productCategoryDTO(
+                            ProductCategoryDTO.builder()
+                                    .productCategoryId(productCategory.getProductCategoryId())
+                                    .categoryName(productCategory.getCategoryName())
+                                    .categoryDescription(productCategory.getCategoryDescription())
+                                    .build()
+                    )
+                    .refrigerated(product.getRefrigerated())
+                    .reorderQuantity(product.getReorderQuantity())
+                    .createdBy(product.getCreatedBy())
+                    .createdDate(product.getCreatedDate())
+                    .lastModifiedBy(product.getLastModifiedBy())
+                    .lastModifiedDate(product.getLastModifiedDate())
+                    .build());
+
+        }
+        return new CommonResponse<>().notFound();
+    }
+
+    @Override
+    public CommonResponse<?> getProductByBarcode(String barcode) {
+        Product product = productRepository.findByIsDeletedIsFalseAndBarcode(barcode).orElse(null);
+        if (product == null) {
+            return new CommonResponse<>().notFound("Not founded product via barcode");
+        } else {
+            ProductCategory productCategory = productCategoryRepository.findByIsDeletedIsFalseAndProductCategoryId(
+                    product.getProductCategoryId()
+            ).orElse(ProductCategory.builder()
+                    .categoryName("")
+                    .categoryDescription("")
+                    .productCategoryId(null)
+                    .build());
+            return new CommonResponse<>().success().data(ProductDTO.builder()
+                    .productId(product.getProductId())
+                    .productCode(product.getProductCode())
+                    .productName(product.getProductName())
+                    .sku(product.getSku())
+                    .barcode(product.getBarcode())
+                    .isPacked(product.getIsPacked())
+                    .packedDepth(product.getPackedDepth())
+                    .packedHeight(product.getPackedHeight())
+                    .packedWidth(product.getPackedWidth())
+                    .packedWeight(product.getPackedWeight())
+                    .productDescription(product.getProductDescription())
+                    .unit(product.getUnit())
+                    .productCategoryDTO(
+                            ProductCategoryDTO.builder()
+                                    .productCategoryId(productCategory.getProductCategoryId())
+                                    .categoryName(productCategory.getCategoryName())
+                                    .categoryDescription(productCategory.getCategoryDescription())
+                                    .build()
+                    )
+                    .refrigerated(product.getRefrigerated())
+                    .reorderQuantity(product.getReorderQuantity())
+                    .createdBy(product.getCreatedBy())
+                    .createdDate(product.getCreatedDate())
+                    .lastModifiedBy(product.getLastModifiedBy())
+                    .lastModifiedDate(product.getLastModifiedDate())
+                    .build());
+        }
     }
 }

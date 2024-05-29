@@ -1,7 +1,7 @@
 package com.monopoco.inventory.repository;
 
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.inventory.filter.ImportRequestFilter;
-import com.monopoco.inventory.response.PageResponse;
 import com.monopoco.inventory.response.model.ImportRequestDTO;
 import org.springframework.data.domain.Pageable;
 

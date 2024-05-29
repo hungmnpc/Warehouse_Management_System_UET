@@ -1,3 +1,39 @@
+@import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../../../node_modules/@syncfusion/ej2-layouts/styles/material.css";
+
+
+.status-line .e-timeline  {
+    height: auto;
+}
+
+.status-line .state-success {
+    outline-color: #90D26D ;
+    background-color: #90D26D;
+}
+
+.e-timeline-item.dark .e-content{
+    color: white;
+}
+
+.status-line .state-danger {
+    outline-color: #A91D3A;
+    background-color: #A91D3A;
+    --dot-size: 30px
+}
+
+.status-line .completed.e-connector::after {
+    border-color: #90D26D;
+}
+
+.status-line .state-progress {
+    outline-color: #40A2E3;
+    background-color: #40A2E3;
+    --dot-size: 25px
+}
+
+.status-line .intermediate.e-connector::after {
+    border-style: dashed;
+}
 html *::-webkit-scrollbar {
     border-radius: 0;
     width: 8px;

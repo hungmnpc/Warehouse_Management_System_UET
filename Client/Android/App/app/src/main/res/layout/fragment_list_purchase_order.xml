@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.ListPurchaseOrder">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_marginTop="10dp"
+        android:paddingTop="20dp"
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:paddingHorizontal="10dp"
+        android:layout_height="match_parent">
+    <ListView
+        android:id="@+id/po_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:divider="@color/transparent"
+        android:dividerHeight="10.5dp"
+        android:scrollbars="vertical"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="70dp"
+        tools:listitem="@layout/purchase_order_item" />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

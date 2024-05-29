@@ -22,6 +22,8 @@ public class ImportRequestFilter {
 
     private String warehouseName;
 
+    private UUID warehouseId;
+
     private String orderBy;
 
     private String orderType;

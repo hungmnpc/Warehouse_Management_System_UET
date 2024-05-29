@@ -1,11 +1,11 @@
 package com.monopoco.history.controller;
 
+import com.monopoco.common.model.HistoryEvent;
 import com.monopoco.history.entity.History;
 import com.monopoco.history.filter.FilterCondition;
 import com.monopoco.history.repository.impl.GenericFilterCriteriaBuilder;
 import com.monopoco.history.response.CommonResponse;
 import com.monopoco.history.response.PageResponse;
-import com.monopoco.history.response.model.HistoryDTO;
 import com.monopoco.history.service.FilterBuilderService;
 import com.monopoco.history.service.HistoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -17,7 +17,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -48,11 +47,11 @@ public class HistoryController {
 
     @PostMapping("")
     public ResponseEntity<?> saveNewHistory(
-            @RequestBody HistoryDTO historyDTO
+            @RequestBody HistoryEvent historyEvent
     ) {
         try {
             return ResponseEntity.ok(historyService.save(
-                    historyDTO
+                    historyEvent
             ));
         } catch (Exception exception) {
             exception.printStackTrace();

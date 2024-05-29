@@ -5,6 +5,7 @@ import React, { useRef } from 'react';
 import HelpIcon from '@mui/icons-material/Help';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import {
+    Button,
     Dialog,
     DialogTitle,
     IconButton,
@@ -41,11 +42,15 @@ import { productHeaderTableKey, roles } from '../../constant';
 import { UUID } from 'crypto';
 import SettingsIcon from '@mui/icons-material/Settings';
 import QRCode from 'qrcode.react';
+import { BarcodeGenerator } from '../../components/barcode/BarcodeGenerator';
+import ReactToPrint from 'react-to-print';
 
 const rolePermission = [roles.superAdmin, roles.admin, roles.warehouseManager];
 
 export const ProductList = () => {
     const { resources, resource, action, id } = useResource();
+
+    const barcodeRef = useRef<HTMLDivElement>(null);
 
     const [open, toggleOpen] = React.useState(false);
     const [productChoosed, setProductChoosed] = React.useState<IProduct>();
@@ -115,7 +120,7 @@ export const ProductList = () => {
                                     )}
                                 </StyledTableCell>
                             ))}
-                            <StickyStyledTableCell style={{ minWidth: 200 }} align="right">
+                            <StickyStyledTableCell style={{ minWidth: 180 }} align="right">
                                 Actions
                             </StickyStyledTableCell>
                         </TableRow>
@@ -142,7 +147,15 @@ export const ProductList = () => {
                                         {row.unit}
                                     </TableCell>
                                     <TableCell component="th" scope="row">
-                                        {row.isPacked ? 'true' : 'false'}
+                                        {row.isPacked ? (
+                                            <Tooltip
+                                                title={`${row.packedHeight}(H) * ${row.packedWidth}(W) * ${row.packedDepth}(D)`}
+                                            >
+                                                <p>true</p>
+                                            </Tooltip>
+                                        ) : (
+                                            'false'
+                                        )}
                                     </TableCell>
                                     <TableCell component="th" scope="row">
                                         {row.sku}
@@ -179,20 +192,7 @@ export const ProductList = () => {
                                                 </IconButton>
                                             </Tooltip>
                                         </Link>
-                                        <Link
-                                            to={
-                                                resource?.show
-                                                    ? resource?.show?.toString().replace(':id', row.productId)
-                                                    : '/404'
-                                            }
-                                        >
-                                            <Tooltip title="Show">
-                                                <IconButton aria-label="fingerprint" color="primary">
-                                                    <VisibilityIcon />
-                                                </IconButton>
-                                            </Tooltip>
-                                        </Link>
-                                        <Tooltip title="QRCode">
+                                        <Tooltip title="Barcode">
                                             <IconButton
                                                 onClick={() => {
                                                     handleOpen(row);
@@ -250,18 +250,33 @@ export const ProductList = () => {
             </TableContainer>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>QR CODE</DialogTitle>
-                <div
-                    style={{ width: 300, height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                >
-                    {open && (
-                        <QRCode
-                            size={250}
-                            value={`product#${productChoosed?.productId}#${productChoosed?.productCode}`}
-                            renderAs="canvas"
+                <DialogTitle>Product's Barcode</DialogTitle>
+
+                {open && productChoosed && (
+                    <>
+                        <div
+                            ref={barcodeRef}
+                            style={{
+                                marginTop: 10,
+                                padding: 10,
+                                width: 500,
+                                height: 300,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {/* <BarcodeGenerator height={100} value={productChoosed?.barcode} /> */}
+                            <QRCode size={250} value={productChoosed.barcode} renderAs="canvas" />
+                            <p>{productChoosed.barcode}</p>
+                        </div>
+                        <ReactToPrint
+                            content={() => barcodeRef.current}
+                            trigger={() => <Button variant="contained">Print</Button>}
                         />
-                    )}
-                </div>
+                    </>
+                )}
             </Dialog>
         </List>
     );

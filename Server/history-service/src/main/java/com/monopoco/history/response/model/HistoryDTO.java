@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.bson.types.ObjectId;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,5 +43,5 @@ public class HistoryDTO{
 
     private UUID agentId;
 
-    private Map<String, Object> description;
+    private List<KeyValue> description;
 }

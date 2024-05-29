@@ -4,14 +4,15 @@ import com.monopoco.authservice.entity.QRoleEntity;
 import com.monopoco.authservice.entity.QUserEntity;
 import com.monopoco.authservice.filter.UserFilter;
 import com.monopoco.authservice.repository.UserRepositoryDSL;
-import com.monopoco.authservice.response.PageResponse;
-import com.monopoco.authservice.response.model.QUserDTO;
-import com.monopoco.authservice.response.model.UserDTO;
+import com.monopoco.common.model.PageResponse;
+import com.monopoco.common.model.user.QUserDTO;
+import com.monopoco.common.model.user.UserDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -49,7 +50,8 @@ public class UserRepositoryDSLImpl implements UserRepositoryDSL {
                         userEntity.firstName,
                         userEntity.lastName,
                         userEntity.userName,
-                        roleEntity.roleName
+                        roleEntity.roleName,
+                        userEntity.warehouseId
                 ) )
                 .from(userEntity)
                 .innerJoin(roleEntity)
@@ -60,7 +62,18 @@ public class UserRepositoryDSLImpl implements UserRepositoryDSL {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(userEntity.isDeleted.isFalse());
         if (filter != null) {
+            if (filter.getWarehouseId() != null) {
+                booleanBuilder.and(userEntity.warehouseId.eq(filter.getWarehouseId()));
+            }
 
+            if (!StringUtils.isEmpty(filter.getUsername())) {
+                booleanBuilder.and(userEntity.userName.containsIgnoreCase(filter.getUsername())
+                        );
+            }
+
+            if (filter.getRole() != null) {
+                booleanBuilder.and(roleEntity.roleName.eq(filter.getRole()));
+            }
         }
         query.where(booleanBuilder);
         List<UserDTO> result = query.fetch();

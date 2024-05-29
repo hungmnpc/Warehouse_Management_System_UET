@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragments.ReceiveFragment"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:height="80dp"
+            android:textColor="@color/white"
+            android:textSize="45sp"
+            android:textAlignment="center"
+
+            android:text="@string/to_receive" />
+
+        <EditText
+            android:id="@+id/poCode"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:enabled="false"
+            android:background="@drawable/edittext_border"
+            android:drawablePadding="10dp"
+            android:nextFocusDown="@id/login_password_field"
+            android:paddingLeft="10dp"
+            android:paddingTop="18dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp"
+            android:textColor="@color/white"
+            android:textColorHint="#B9FFFFFF"
+            android:textColorLink="@color/white"
+            android:textCursorDrawable="@drawable/text_cursor"
+            android:textSize="20dp"/>
+
+        <EditText
+            android:id="@+id/bin_barcode"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/edittext_border"
+            android:drawableRight="@drawable/icon_barcode"
+            android:drawablePadding="10dp"
+            android:hint="Bin Barcode"
+            android:nextFocusDown="@id/login_password_field"
+            android:paddingLeft="10dp"
+            android:paddingTop="18dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp"
+            android:textColor="@color/white"
+            android:textColorHint="#B9FFFFFF"
+            android:textColorLink="@color/white"
+            android:textCursorDrawable="@drawable/text_cursor"
+            android:textSize="20dp"/>
+
+        <EditText
+            android:id="@+id/product_code"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/edittext_border"
+            android:drawableRight="@drawable/icon_barcode"
+            android:drawablePadding="10dp"
+            android:hint="Product Code"
+            android:nextFocusDown="@id/login_password_field"
+            android:paddingLeft="10dp"
+            android:paddingTop="18dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp"
+            android:textColor="@color/white"
+            android:textColorHint="#B9FFFFFF"
+            android:textColorLink="@color/white"
+            android:textCursorDrawable="@drawable/text_cursor"
+            android:textSize="20dp"/>
+
+        <EditText
+            android:id="@+id/quantity"
+            android:inputType="number"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/edittext_border"
+            android:drawablePadding="10dp"
+            android:hint="Quantity"
+            android:nextFocusDown="@id/login_password_field"
+            android:paddingLeft="10dp"
+            android:paddingTop="18dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp"
+            android:textColor="@color/white"
+            android:textColorHint="#B9FFFFFF"
+            android:textColorLink="@color/white"
+            android:textCursorDrawable="@drawable/text_cursor"
+            android:textSize="20dp"/>
+
+        <Button
+            android:id="@+id/btn_stocked"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="63dp"
+            android:background="@drawable/button"
+            android:enabled="false"
+            android:gravity="center"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:padding="13dp"
+            android:text="Stocked"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textFontWeight="700"
+            android:textSize="26dp">
+        </Button>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/loading_dialog_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#66000000"
+            android:gravity="center">
+
+            <ProgressBar
+                android:id="@+id/login_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="true"></ProgressBar>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

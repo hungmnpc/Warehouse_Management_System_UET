@@ -1,14 +1,18 @@
 package com.monopoco.history.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.monopoco.common.model.HistoryType;
+import com.monopoco.history.response.model.KeyValue;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Project: Server
@@ -34,14 +38,18 @@ public class History {
     @JsonProperty("userId")
     private String userId;
 
+    @Field("username")
+    private String username;
+
     @Field(name = "ts")
     private Long ts;
 
     @Field(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private HistoryType type;
 
-    @Field(name = "title")
-    private String title;
+    @Field(name = "content")
+    private String content;
 
     @Field(name = "agent_type")
     @JsonProperty("agent_type")
@@ -50,7 +58,4 @@ public class History {
     @Field(name = "agent_id")
     @JsonProperty("agent_id")
     private String agentId;
-
-    @Field(name = "description")
-    private Map<String, Object> description;
 }

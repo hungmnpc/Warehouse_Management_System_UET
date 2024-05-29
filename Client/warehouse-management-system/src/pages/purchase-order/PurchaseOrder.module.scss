@@ -1,0 +1,38 @@
+
+.po_info {
+    .po_info_field {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        p {
+            margin: 0;
+        }
+        .title {
+            min-width: 200px;
+            margin: 0;
+            font-weight: 600;
+            font-size: 17px;
+        }
+    }
+    
+}
+
+.add-div {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+.product_list {
+    margin-top: 20px;
+}
+.status-cpn {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: 600;
+    border: 2px solid;
+}

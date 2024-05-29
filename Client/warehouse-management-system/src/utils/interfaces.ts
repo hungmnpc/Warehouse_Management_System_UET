@@ -15,6 +15,30 @@ export interface IProductCategory extends DTO, IAudit {
     categoryDescription: string;
 }
 
+export interface ISupplier extends DTO, IAudit {
+    id: UUID;
+    supplierName: string;
+    supplierNumber: string;
+    supplierAddress1: string;
+    supplierAddress2: string;
+}
+
+export interface IPurchaseOrder extends DTO, IAudit {
+    id: UUID;
+    status: string;
+    poCode: string;
+    referenceNumber: string;
+    inboundDate: string;
+    arrivalDate: string;
+    comment: string;
+    supplierId: string;
+    supplierName: string;
+    warehouseId: UUID;
+    warehouseName: string;
+    employeeFullName: string;
+    employeeName: string;
+}
+
 export interface IProduct extends DTO, IAudit {
     productId: UUID;
     productCode: string;
@@ -45,6 +69,45 @@ export interface IWarehouse extends DTO, IAudit {
     wardName: string;
     wardId: string;
     type: string;
+}
+
+export interface HistoryData {
+    id: any;
+    agent_id: UUID;
+    agent_type: string;
+    content: string;
+    ts: number;
+    userId: UUID;
+    username: string | undefined;
+}
+
+export interface HistoryEvent {
+    ts: number; // Unix timestamp in milliseconds
+    type: string; // Enum or string indicating the type of event
+    username: string | undefined; // Username as a string
+    userId: UUID; // UUID in string format
+    content: string; // Event content
+    agentType: string; // Agent type
+    agentId: UUID; // UUID in string format
+}
+
+export interface IGoodsReceived extends DTO, IAudit {
+    id: UUID;
+    warehouseName: string;
+    warehouseId: UUID;
+    poCode: string;
+    importRequestCode: string;
+    deliveryDate: string;
+    estimatedArrivalDate: string;
+    status: string;
+    employeeId1: string;
+    employeeId2: string;
+    employeeId3: string;
+    employeeId4: string;
+}
+
+export interface IPurchaseOrder extends DTO, IAudit {
+    id: UUID;
 }
 
 export interface IAudit {

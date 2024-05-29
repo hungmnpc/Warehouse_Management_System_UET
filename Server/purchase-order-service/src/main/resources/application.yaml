@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: purchase-order-service
+  config:
+    import: optional:configserver:http://localhost:8888
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: localhost:29092
+      group-id: history
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          deserializer:
+            value:
+              delegate:
+                class: org.springframework.kafka.support.serializer.JsonDeserializer
+          json:
+            trusted:
+              packages: "*"
+    topic:
+      name: history
+
+
+secret: monopoco123
+superToken: hungdzqua
+superTokenIncludeBearer: Bearer hungdzqua
+superadminID: 1c51b706-5253-4425-9b77-deeb5969a3e6
+accessTokenExp: 86400000 # 24h
+SupplierURL: http://localhost:8222/suppliers
+WarehouseURL: http://localhost:8222/warehouses
+AuthURL: http://localhost:8222/auth
+historyURL: http://localhost:8222/histories
+productURL: http://localhost:8222/products

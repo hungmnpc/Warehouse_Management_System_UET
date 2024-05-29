@@ -7,3 +7,5 @@ spring:
 secret: monopoco123
 superToken: hungdzqua
 accessTokenExp: 86400000 # 24h
+superAdminID: 1c51b706-5253-4425-9b77-deeb5969a3e6
+superTokenWithBeare: Bearer hungdzqua

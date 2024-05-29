@@ -1,12 +1,13 @@
 package com.monopoco.authservice.controller;
 
+import com.monopoco.authservice.filter.UserFilter;
 import com.monopoco.authservice.request.LoginRequest;
 import com.monopoco.authservice.request.UserRequest;
-import com.monopoco.authservice.response.CommonResponse;
 import com.monopoco.authservice.response.model.LoginResponse;
 import com.monopoco.authservice.response.model.RoleDTO;
-import com.monopoco.authservice.response.model.UserDTO;
 import com.monopoco.authservice.service.UserService;
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.user.UserDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.ResponseEntity.internalServerError;
@@ -122,11 +120,19 @@ public class AuthController {
     @GetMapping("/users")
     public ResponseEntity<?> getAllUser(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "999999") int size
+            @RequestParam(defaultValue = "999999") int size,
+            @RequestParam(defaultValue = "") String username,
+            @RequestParam(required = false) UUID warehouseId,
+            @RequestParam(required = false) String roleName
     ) {
         try {
             Pageable pageable = PageRequest.of(page, size);
-            CommonResponse<?> response = userService.getAllUser(null, pageable);
+            UserFilter filter = UserFilter.builder()
+                    .username(username)
+                    .warehouseId(warehouseId)
+                    .role(roleName)
+                    .build();
+            CommonResponse<?> response = userService.getAllUser(filter, pageable);
             return ResponseEntity.ok(response);
 
         } catch (Exception exception) {

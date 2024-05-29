@@ -1,10 +1,10 @@
 package com.monopoco.inventory.repository.impl;
 
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.inventory.entity.QImportRequest;
 import com.monopoco.inventory.entity.QWarehouseEntity;
 import com.monopoco.inventory.filter.ImportRequestFilter;
 import com.monopoco.inventory.repository.ImportRequestRepositoryDSL;
-import com.monopoco.inventory.response.PageResponse;
 import com.monopoco.inventory.response.model.ImportRequestDTO;
 import com.monopoco.inventory.response.model.QImportRequestDTO;
 import com.querydsl.core.BooleanBuilder;
@@ -71,6 +71,9 @@ public class ImportRequestRepositoryDSLImpl implements ImportRequestRepositoryDS
         if (filter != null) {
             if (filter.getWarehouseName() != null) {
                 booleanBuilder.and(warehouseEntity.warehouseName.containsIgnoreCase(filter.getWarehouseName()));
+            }
+            if (filter.getWarehouseId() != null) {
+                booleanBuilder.and(warehouseEntity.id.eq(filter.getWarehouseId()));
             }
             if (!StringUtils.isEmpty(filter.getOrderBy())) {
                 Path<Object> fieldPath = Expressions.path(Object.class, warehouseEntity, filter.getOrderBy());

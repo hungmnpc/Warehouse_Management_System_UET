@@ -1,20 +1,19 @@
 package com.monopoco.product.repository.impl;
 
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.product.entity.QProduct;
 import com.monopoco.product.entity.QProductCategory;
 import com.monopoco.product.filter.ProductFilter;
 import com.monopoco.product.repository.ProductRepositoryDSL;
-import com.monopoco.product.response.PageResponse;
-import com.monopoco.product.response.model.DropDown;
 import com.monopoco.product.response.model.ProductDTO;
 import com.monopoco.product.response.model.QProductCategoryDTO;
 import com.monopoco.product.response.model.QProductDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.sql.types.UtilUUIDType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -40,7 +39,7 @@ public class ProductRepositoryDSLImpl implements ProductRepositoryDSL {
     private final QProductCategory category = QProductCategory.productCategory;
 
     @Override
-    public PageResponse<List<ProductDTO>> searchOrder(ProductFilter filter, Pageable pageable) {
+    public PageResponse<List<ProductDTO>> searchOrder(ProductFilter filter, Pageable pageable, List<UUID> IdNotIn) {
         JPAQuery<ProductDTO> query = new JPAQuery<>(entityManager)
                 .select(new QProductDTO(
                         product.createdBy,
@@ -77,7 +76,12 @@ public class ProductRepositoryDSLImpl implements ProductRepositoryDSL {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(product.isDeleted.isFalse());
         if (filter != null) {
-
+            if (!StringUtils.isEmpty(filter.getProductName())) {
+                booleanBuilder.and(product.productName.containsIgnoreCase(filter.getProductName()));
+            }
+        }
+        if (IdNotIn != null) {
+                booleanBuilder.and(product.productId.notIn(IdNotIn));
         }
         query.where(booleanBuilder);
         List<ProductDTO> result = query.fetch();

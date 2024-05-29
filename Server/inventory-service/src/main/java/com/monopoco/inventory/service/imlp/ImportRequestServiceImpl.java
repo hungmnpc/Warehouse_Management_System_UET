@@ -1,5 +1,7 @@
 package com.monopoco.inventory.service.imlp;
 
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.inventory.clients.AuthClient;
 import com.monopoco.inventory.clients.WarehouseClient;
 import com.monopoco.inventory.entity.ImportExportDetail;
@@ -11,8 +13,6 @@ import com.monopoco.inventory.repository.ImportRequestRepository;
 import com.monopoco.inventory.repository.ImportRequestRepositoryDSL;
 import com.monopoco.inventory.request.ImportRequestBody;
 import com.monopoco.inventory.request.RequestDetail;
-import com.monopoco.inventory.response.CommonResponse;
-import com.monopoco.inventory.response.PageResponse;
 import com.monopoco.inventory.response.model.ImportRequestDTO;
 import com.monopoco.inventory.response.model.UserDTO;
 import com.monopoco.inventory.response.model.WarehouseDTO;
@@ -121,5 +121,10 @@ public class ImportRequestServiceImpl implements ImportRequestService {
         }
         PageResponse<List<ImportRequestDTO>> pageResponse = importRequestRepositoryDSL.searchOrder(filter, pageable);
         return new CommonResponse<>().success().data(pageResponse);
+    }
+
+    @Override
+    public CommonResponse<?> createNewImportFromPo(UUID poId) {
+        return null;
     }
 }

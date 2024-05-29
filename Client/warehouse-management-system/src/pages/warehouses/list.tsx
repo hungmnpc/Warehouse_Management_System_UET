@@ -1,7 +1,7 @@
 import { useDelete, useList, usePermissions, useResource } from '@refinedev/core';
 import { List } from '@refinedev/mui';
 import { IWarehouse } from '../../utils/interfaces';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     IconButton,
     Paper,
@@ -30,12 +30,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigation } from '@refinedev/core';
 import { UUID } from 'crypto';
+import { roles } from '../../constant';
 
 export const WarehouseList = () => {
     const { list, create, edit, show, clone, push, replace, goBack, listUrl, createUrl, editUrl, showUrl, cloneUrl } =
         useNavigation();
     const { resources, resource, action, id } = useResource();
-    console.log(resource);
     const [page, setPage] = React.useState(0);
     const { data: permissionsData } = usePermissions<string[]>();
 
@@ -76,7 +76,7 @@ export const WarehouseList = () => {
     };
     console.log(data);
     return (
-        <List canCreate={true}>
+        <List canCreate={permissionsData?.includes(roles.admin) || permissionsData?.includes(roles.superAdmin)}>
             <TableContainer style={{ maxHeight: 'calc(53px * 10)' }} component={Paper}>
                 <Table stickyHeader sx={{ minWidth: 500 }} aria-label="user table">
                     <TableHead>
@@ -128,11 +128,12 @@ export const WarehouseList = () => {
                                     </TableCell>
                                     <TableCell align="right">
                                         <DeleteButtonIcon
+                                            disabled={permissionsData?.includes(roles.warehouseManager)}
                                             onDelete={() => {
                                                 deleteItem(row.id);
                                             }}
                                         />
-                                        <Link
+                                        {/* <Link
                                             to={
                                                 resource?.edit
                                                     ? resource?.edit?.toString().replace(':id', row.id)
@@ -144,7 +145,7 @@ export const WarehouseList = () => {
                                                     <EditIcon />
                                                 </IconButton>
                                             </Tooltip>
-                                        </Link>
+                                        </Link> */}
                                         <Link
                                             to={
                                                 resource?.show

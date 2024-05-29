@@ -5,18 +5,25 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.inventory.kafka.InventoryProducer;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import static java.util.Arrays.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -39,12 +46,18 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private InventoryProducer inventoryProducer;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
         if (request.getServletPath().equals("/login")) {
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(requestWrapper, responseWrapper);
         } else {
-            String authorizationHeader = request.getHeader(AUTHORIZATION);
+            String authorizationHeader = requestWrapper.getHeader(AUTHORIZATION);
 
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 try {
@@ -52,21 +65,23 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
                     Map<String, Object> principal = new HashMap<>();
                     if (token.equals(Objects.requireNonNull(env.getProperty("superToken")))) {
                         principal.put("username", "SuperAdmin");
-                        principal.put("id", "411aa562-53cd-4fef-919f-19263a65f19b");
+                        principal.put("id", UUID.fromString(env.getProperty("superAdminID")));
                         Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
                         authorities.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
                         UsernamePasswordAuthenticationToken authenticationToken =
                                 new UsernamePasswordAuthenticationToken(principal, null, authorities);
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                        filterChain.doFilter(request, response);
+                        filterChain.doFilter(requestWrapper, response);
                     } else {
                         Algorithm algorithm = Algorithm.HMAC256(Objects.requireNonNull(env.getProperty("secret")).getBytes());
                         JWTVerifier verifier = JWT.require(algorithm).build();
                         DecodedJWT decodedJWT = verifier.verify(token);
                         String username = decodedJWT.getSubject();
                         UUID id = decodedJWT.getClaim("id").as(UUID.class);
+                        UUID warehouseId = decodedJWT.getClaim("warehouseId").as(UUID.class);
                         principal.put("username", username);
                         principal.put("id", id);
+                        principal.put("warehouseId", warehouseId);
                         String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
                         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                         stream(roles).forEach(role -> {
@@ -75,9 +90,10 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken authenticationToken =
                                 new UsernamePasswordAuthenticationToken(principal, null, authorities);
                         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                        filterChain.doFilter(request, response);
+                        filterChain.doFilter(requestWrapper, responseWrapper);
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     log.error("Error logging in: {}", ex.getMessage());
                     response.setHeader("error", ex.getMessage());
                     response.setStatus(FORBIDDEN.value());
@@ -87,8 +103,22 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
                     new ObjectMapper().writeValue(response.getOutputStream(), error);
                 }
             } else {
-                filterChain.doFilter(request, response);
+                filterChain.doFilter(requestWrapper, responseWrapper);
             }
         }
+        byte[] responseContent = responseWrapper.getContentAsByteArray();
+        String responseBody = new String(responseContent, response.getCharacterEncoding());
+        log.error("error ffasd{}", requestWrapper.getServletPath());
+        if (requestWrapper.getServletPath().startsWith("/products") && !StringUtils.isEmpty(responseBody)) {
+            // Ghi lại hoặc sử dụng nội dung phản hồi
+            System.out.println("Response Body: " + responseBody);
+            ObjectMapper objectMapper = new ObjectMapper();
+            CommonResponse<?> res = objectMapper.readValue(responseBody, CommonResponse.class);
+            if (res.getHistory() != null) {
+                inventoryProducer.sendMessage(res.getHistory());
+            }
+        }
+        // Sao chép nội dung vào phản hồi thực tế
+        responseWrapper.copyBodyToResponse();
     }
 }

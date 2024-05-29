@@ -1,4 +1,4 @@
-import { Authenticated, GitHubBanner, Refine } from '@refinedev/core';
+import { Authenticated, GitHubBanner, Refine, usePermissions } from '@refinedev/core';
 import { DevtoolsPanel, DevtoolsProvider } from '@refinedev/devtools';
 import { RefineKbar, RefineKbarProvider } from '@refinedev/kbar';
 
@@ -20,7 +20,7 @@ import routerBindings, {
     UnsavedChangesNotifier,
 } from '@refinedev/react-router-v6';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router-dom';
-import { authProvider } from './authProvider';
+import { ACCESS_TOKEN, authProvider, getResource } from './authProvider';
 import { AppIcon } from './components/app-icon';
 import { Header } from './components/header';
 import { ColorModeContextProvider } from './contexts/color-mode';
@@ -36,13 +36,11 @@ import PrivateRoute from './privateRoute';
 import { NotPermissionPage } from './pages/common/permissions';
 import { locationProvider } from './location-provider';
 import { warehouseProvider } from './dataprovider/warehouseDataProvider';
+import { purchaseDataProvider } from './dataprovider/purchaseDataProvider';
+import { useEffect, useState } from 'react';
 
 const customTitleHandler = ({ resource, action, params }: any) => {
-    let title = 'Custom default'; // Default title
-
-    console.log(resource);
-    console.log(action);
-    console.log(params);
+    let title = 'WMS-UET'; // Default title
 
     if (resource && action) {
         title = `${action.toUpperCase()} ${resource.name.toUpperCase()}  ${params.id ? params.id : ''}`;
@@ -94,6 +92,16 @@ function App() {
         }
     };
 
+    // let resource = permissionData?.includes("")
+
+    const [resouces, setResources] = useState<any[]>([]);
+
+    useEffect(() => {
+        console.log('vào đây ');
+        setResources(getResource());
+    }, [localStorage.getItem(ACCESS_TOKEN)]);
+    console.log(getResource());
+
     return (
         <BrowserRouter>
             <RefineKbarProvider>
@@ -101,72 +109,69 @@ function App() {
                     <CssBaseline />
                     <GlobalStyles styles={{ html: { WebkitFontSmoothing: 'auto' } }} />
                     <RefineSnackbarProvider>
-                        <DevtoolsProvider>
-                            <Refine
-                                dataProvider={{
-                                    default: dataProvider('http://localhost:8222'),
-                                    users: dataProvider('http://localhost:8222/auth'),
-                                    warehouses: warehouseProvider('http://localhost:8222/warehouses'),
-                                    products: dataProvider('http://localhost:8222/products'),
-                                    histories: dataProvider('http://localhost:8222/histories'),
-                                    locations: locationProvider('https://vapi.vnappmob.com/api'),
-                                }}
-                                notificationProvider={notificationProvider}
-                                authProvider={authProvider}
-                                routerProvider={routerBindings}
-                                resources={resources}
-                                options={{
-                                    syncWithLocation: true,
-                                    warnWhenUnsavedChanges: true,
-                                    useNewQueryKeys: true,
-                                    projectId: 'Ig9Gm3-5fvyy4-dUoiN0',
-                                }}
-                            >
-                                <Routes>
-                                    <Route
-                                        element={
-                                            <Authenticated
-                                                key="authenticated-inner"
-                                                fallback={<CatchAllNavigate to="/login" />}
+                        <Refine
+                            dataProvider={{
+                                default: dataProvider('http://localhost:8222'),
+                                users: dataProvider('http://localhost:8222/auth'),
+                                warehouses: warehouseProvider('http://localhost:8222/warehouses'),
+                                products: dataProvider('http://localhost:8222/products'),
+                                histories: dataProvider('http://localhost:8222/histories'),
+                                inventories: dataProvider('http://localhost:8222/inventories'),
+                                purchaseOrder: purchaseDataProvider('http://localhost:8222'),
+                                locations: locationProvider('https://vapi.vnappmob.com/api'),
+                            }}
+                            notificationProvider={notificationProvider}
+                            authProvider={authProvider}
+                            routerProvider={routerBindings}
+                            resources={resouces}
+                            options={{
+                                syncWithLocation: true,
+                                warnWhenUnsavedChanges: true,
+                                useNewQueryKeys: true,
+                                projectId: 'Ig9Gm3-5fvyy4-dUoiN0',
+                            }}
+                        >
+                            <Routes>
+                                <Route
+                                    element={
+                                        <Authenticated
+                                            key="authenticated-inner"
+                                            fallback={<CatchAllNavigate to="/login" />}
+                                        >
+                                            <ThemedLayoutV2
+                                                Header={() => <Header sticky />}
+                                                Title={({ collapsed }) => (
+                                                    <ThemedTitleV2
+                                                        collapsed={collapsed}
+                                                        text="Warehouse management system"
+                                                        icon={<AppIcon />}
+                                                    />
+                                                )}
                                             >
-                                                <ThemedLayoutV2
-                                                    Header={() => <Header sticky />}
-                                                    Title={({ collapsed }) => (
-                                                        <ThemedTitleV2
-                                                            collapsed={collapsed}
-                                                            text="Warehouse management system"
-                                                            icon={<AppIcon />}
-                                                        />
-                                                    )}
-                                                >
-                                                    <Outlet />
-                                                </ThemedLayoutV2>
-                                            </Authenticated>
-                                        }
-                                    >
-                                        <Route index element={<NavigateToResource resource="blog_posts" />} />
-                                        <Route>
-                                            {routers.map((data: any, index: number) => renderRoute(data, index))}
-                                        </Route>
-                                    </Route>
-                                    <Route
-                                        element={
-                                            <Authenticated key="authenticated-outer" fallback={<Outlet />}>
-                                                <NavigateToResource />
-                                            </Authenticated>
-                                        }
-                                    >
-                                        <Route path="/login" element={<Login />} />
-                                        <Route path="/register" element={<Register />} />
-                                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                                    </Route>
-                                </Routes>
-                                <RefineKbar />
-                                <UnsavedChangesNotifier />
-                                <DocumentTitleHandler handler={customTitleHandler} />;
-                            </Refine>
-                            <DevtoolsPanel />
-                        </DevtoolsProvider>
+                                                <Outlet />
+                                            </ThemedLayoutV2>
+                                        </Authenticated>
+                                    }
+                                >
+                                    <Route index element={<NavigateToResource resource="blog_posts" />} />
+                                    <Route>{routers.map((data: any, index: number) => renderRoute(data, index))}</Route>
+                                </Route>
+                                <Route
+                                    element={
+                                        <Authenticated key="authenticated-outer" fallback={<Outlet />}>
+                                            <NavigateToResource />
+                                        </Authenticated>
+                                    }
+                                >
+                                    <Route path="/login" element={<Login />} />
+                                    <Route path="/register" element={<Register />} />
+                                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                                </Route>
+                            </Routes>
+                            <RefineKbar />
+                            <UnsavedChangesNotifier />
+                            <DocumentTitleHandler handler={customTitleHandler} />;
+                        </Refine>
                     </RefineSnackbarProvider>
                 </ColorModeContextProvider>
             </RefineKbarProvider>

@@ -1,4 +1,4 @@
-import { useResource } from '@refinedev/core';
+import { usePermissions, useResource } from '@refinedev/core';
 import { Create, useAutocomplete } from '@refinedev/mui';
 import { useForm } from '@refinedev/react-hook-form';
 import { ICreateUser, IDropDown, IUser } from '../../utils/interfaces';
@@ -8,12 +8,18 @@ import Grid2 from '@mui/material/Unstable_Grid2/Grid2';
 import { emailRegex } from '../../constant';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { getUserNameCurrently, getWarehouseIdCurrently } from '../../authProvider';
 export const UserCreate = () => {
     const [showPassword, setShowPassword] = React.useState(false);
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleMouseDownPassword = () => setShowPassword(!showPassword);
     const { resources, resource, action, id } = useResource();
+
+    const { data: permissionData } = usePermissions<string[]>();
+
+    console.log('permission', permissionData);
+
     const {
         saveButtonProps,
         refineCore: { formLoading },
@@ -37,8 +43,16 @@ export const UserCreate = () => {
         resource: 'dropdown',
         dataProviderName: 'warehouses',
     });
-
-    console.log(warehouseAutocompleteProps);
+    let permission;
+    if (permissionData) {
+        if (permissionData.includes('ROLE_WAREHOUSE_MANAGER')) {
+            console.log(warehouseAutocompleteProps.options);
+            console.log();
+            warehouseAutocompleteProps.options = warehouseAutocompleteProps.options.filter(
+                (value) => value.key === getWarehouseIdCurrently(),
+            );
+        }
+    }
 
     return (
         <Create isLoading={formLoading} saveButtonProps={saveButtonProps}>

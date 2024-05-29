@@ -1,6 +1,5 @@
 package com.monopoco.authservice.service;
 
-import com.ctc.wstx.util.StringUtil;
 import com.monopoco.authservice.entity.RoleEntity;
 import com.monopoco.authservice.entity.UserEntity;
 import com.monopoco.authservice.filter.UserFilter;
@@ -9,14 +8,15 @@ import com.monopoco.authservice.repository.UserEntityRepository;
 import com.monopoco.authservice.repository.UserRepositoryDSL;
 import com.monopoco.authservice.request.LoginRequest;
 import com.monopoco.authservice.request.UserRequest;
-import com.monopoco.authservice.response.CommonResponse;
-import com.monopoco.authservice.response.PageResponse;
 import com.monopoco.authservice.response.UserPrincipal;
 import com.monopoco.authservice.response.model.DropDown;
 import com.monopoco.authservice.response.model.LoginResponse;
 import com.monopoco.authservice.response.model.RoleDTO;
-import com.monopoco.authservice.response.model.UserDTO;
 import com.monopoco.authservice.util.CommonUtil;
+import com.monopoco.authservice.util.PrincipalUser;
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.PageResponse;
+import com.monopoco.common.model.user.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -34,7 +33,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Project: Server
@@ -133,7 +131,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 long timeExp = Long.parseLong(Objects.requireNonNull(env.getProperty("accessTokenExp")));
                 String accessToken = CommonUtil.generateAccessToken(
                         userPrincipal, secret,
-                        timeExp, httpRequest
+                        timeExp, httpRequest, user.getWarehouseId()
                 );
                 return new CommonResponse<>().success("Đăng nhập thành công").data(
                         LoginResponse.builder()
@@ -247,7 +245,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public CommonResponse<PageResponse<List<UserDTO>>> getAllUser(UserFilter filter, Pageable pageable) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_SUPER_ADMIN"))) {
+        if (auth != null) {
+            if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
+                    || a.getAuthority().equals("ROLE_SUPER_ADMIN"))) {
+            } else if (auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_WAREHOUSE_MANAGER"))) {
+
+                PrincipalUser principalUser = CommonUtil.getRecentUser();
+                filter.setWarehouseId(principalUser.getWarehouseId());
+                filter.setRole("ROLE_EMPLOYEE");
+            }
             PageResponse<List<UserDTO>> response = userRepositoryDSL.searchOrder(filter, pageable);
             return new CommonResponse<>().success().data(response);
         }

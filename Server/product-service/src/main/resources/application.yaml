@@ -3,14 +3,19 @@ spring:
     name: product-service
   config:
     import: optional:configserver:http://localhost:8888
-
-application:
-  config:
-    imports-url:
-      host: http://localhost:8222/import
-    common_service-url:
-      host: http://localhost:8008
-      random-UUID: /common-utils/random-UUID
+  kafka:
+    bootstrap-servers: localhost:29092
+    producer:
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#      properties:
+#        spring:
+#          json:
+#            type:
+#              mapping: historyeven:com.monopoco.purchaseorder.client.dto.HistoryDTO
+    topic:
+      name: history
 
 
 secret: monopoco123

@@ -2,6 +2,8 @@ package com.monopoco.authservice.filter;
 
 import lombok.*;
 
+import java.util.UUID;
+
 /**
  * Project: Server
  * Package: com.monopoco.authservice.filter
@@ -19,4 +21,8 @@ import lombok.*;
 public class UserFilter {
 
     String username;
+
+    UUID warehouseId;
+
+    String role;
 }

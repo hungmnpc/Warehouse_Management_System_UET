@@ -3,16 +3,15 @@ package com.monopoco.authservice.service;
 import com.monopoco.authservice.filter.UserFilter;
 import com.monopoco.authservice.request.LoginRequest;
 import com.monopoco.authservice.request.UserRequest;
-import com.monopoco.authservice.response.CommonResponse;
-import com.monopoco.authservice.response.PageResponse;
 import com.monopoco.authservice.response.model.DropDown;
 import com.monopoco.authservice.response.model.LoginResponse;
 import com.monopoco.authservice.response.model.RoleDTO;
-import com.monopoco.authservice.response.model.UserDTO;
+import com.monopoco.common.model.CommonResponse;
+import com.monopoco.common.model.PageResponse;
+import com.monopoco.common.model.user.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Pageable;
 
-import javax.management.relation.Role;
 import java.util.List;
 import java.util.UUID;
 

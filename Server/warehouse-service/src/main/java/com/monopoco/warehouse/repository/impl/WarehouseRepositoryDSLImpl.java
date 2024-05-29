@@ -1,12 +1,11 @@
 package com.monopoco.warehouse.repository.impl;
 
+import com.monopoco.common.model.PageResponse;
 import com.monopoco.warehouse.entity.QWarehouseEntity;
 import com.monopoco.warehouse.entity.QWarehouseType;
 import com.monopoco.warehouse.filter.WarehouseFilter;
 import com.monopoco.warehouse.repository.WarehouseRepositoryDSL;
-import com.monopoco.warehouse.response.PageResponse;
 import com.monopoco.warehouse.response.model.QWarehouseDTO;
-import com.monopoco.warehouse.response.model.UserDTO;
 import com.monopoco.warehouse.response.model.WarehouseDTO;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
@@ -72,6 +71,13 @@ public class WarehouseRepositoryDSLImpl implements WarehouseRepositoryDSL {
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         booleanBuilder.and(warehouseEntity.isDeleted.isFalse());
         if (filter != null) {
+            if (!StringUtils.isEmpty(filter.getWarehouseName())) {
+                booleanBuilder.and(warehouseEntity.warehouseName.containsIgnoreCase(filter.getWarehouseName()));
+            }
+            if (filter.getWarehouseId() != null) {
+                booleanBuilder.and(warehouseEntity.id.eq(filter.getWarehouseId()));
+            }
+
             if (!StringUtils.isEmpty(filter.getOrderBy())) {
                 Path<Object> fieldPath = Expressions.path(Object.class, warehouseEntity, filter.getOrderBy());
                 if (filter.getOrderType().equalsIgnoreCase("asc")) {

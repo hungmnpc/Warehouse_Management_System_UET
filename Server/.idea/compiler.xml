@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="supplier-service" />
         <module name="config-server" />
         <module name="inventory-service" />
         <module name="common" />
@@ -15,27 +16,24 @@
         <module name="api-gateway" />
         <module name="history-service" />
         <module name="product-service" />
+        <module name="purchase-order-service" />
+        <module name="socket" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="AuthService" target="17" />
-      <module name="import-service" target="17" />
-      <module name="WMSEureka" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="AuthService" options="-parameters" />
-      <module name="WMSEureka" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="authservice" options="-parameters" />
-      <module name="common" options="-parameters" />
+      <module name="common" options="" />
       <module name="config-server" options="-parameters" />
       <module name="discovery" options="-parameters" />
       <module name="history-service" options="-parameters" />
-      <module name="import-service" options="-parameters" />
       <module name="inventory-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
+      <module name="purchase-order-service" options="-parameters" />
+      <module name="socket" options="-parameters" />
+      <module name="supplier-service" options="-parameters" />
       <module name="warehouse-service" options="-parameters" />
     </option>
   </component>

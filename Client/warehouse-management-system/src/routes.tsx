@@ -12,6 +12,13 @@ import { WarehouseShow } from './pages/warehouses/show';
 import { ProductCreate, ProductEdit, ProductList } from './pages/products';
 import { roles } from './constant';
 import { ProductShow } from './pages/products/show';
+import { ImportStockList } from './pages/import-pages';
+import { SupplierList } from './pages/supplier';
+import { SupplierCreate } from './pages/supplier/create';
+import { EditSupplier } from './pages/supplier/edit';
+import { PurchaseOrderList } from './pages/purchase-order/list';
+import { PurchaseOrderShow } from './pages/purchase-order/show';
+import { PurchaseOrderCreate } from './pages/purchase-order/create';
 
 export const routers = [
     {
@@ -36,7 +43,7 @@ export const routers = [
     {
         path: '/warehouses',
         element: <WarehouseList />,
-        permission: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'],
+        permission: ['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', roles.warehouseManager],
         inner: [
             {
                 path: 'create',
@@ -90,8 +97,9 @@ export const routers = [
         ],
     },
     {
-        path: '/categories',
+        path: '/products/categories',
         element: <CategoryList />,
+        permission: [],
         inner: [
             {
                 path: 'create',
@@ -104,6 +112,63 @@ export const routers = [
             {
                 path: 'show/:id',
                 element: <CategoryShow />,
+            },
+        ],
+    },
+    {
+        path: '/warehouses/:id/goods-received',
+        element: <ImportStockList />,
+        permission: [],
+        inner: [
+            {
+                path: 'create',
+                element: <CategoryCreate />,
+            },
+            {
+                path: 'edit/:id',
+                element: <CategoryEdit />,
+            },
+            {
+                path: 'show/:id',
+                element: <CategoryShow />,
+            },
+        ],
+    },
+    {
+        path: '/supplier',
+        element: <SupplierList />,
+        permission: [],
+        inner: [
+            {
+                path: 'create',
+                element: <SupplierCreate />,
+            },
+            {
+                path: 'edit/:id',
+                element: <EditSupplier />,
+            },
+            {
+                path: 'show/:id',
+                element: <CategoryShow />,
+            },
+        ],
+    },
+    {
+        path: '/purchase_orders',
+        element: <PurchaseOrderList />,
+        permission: [],
+        inner: [
+            {
+                path: 'create',
+                element: <PurchaseOrderCreate />,
+            },
+            {
+                path: 'edit/:id',
+                element: <CategoryEdit />,
+            },
+            {
+                path: 'show/:id',
+                element: <PurchaseOrderShow />,
             },
         ],
     },

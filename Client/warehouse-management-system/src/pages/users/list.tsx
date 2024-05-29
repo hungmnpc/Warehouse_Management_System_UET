@@ -30,6 +30,7 @@ import LastPageRoundedIcon from '@mui/icons-material/LastPageRounded';
 import ChevronLeftRoundedIcon from '@mui/icons-material/ChevronLeftRounded';
 import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import { UUID } from 'crypto';
+import { getUserIdCurrently } from '../../authProvider';
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -41,15 +42,34 @@ export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
 }));
 
+export const StickyStyledTableCellLeft = styled(TableCell)(({ theme }) => {
+    return {
+        [`&.${tableCellClasses.head}`]: {
+            backgroundColor: theme.palette.mode == 'light' ? '#F1EEDC' : '#0C0C0C',
+            color: theme.palette.mode == 'dark' ? '#FFF' : '#000',
+            position: 'sticky',
+            left: 0,
+            zIndex: theme.zIndex.appBar - 1,
+        },
+        [`&.${tableCellClasses.body}`]: {
+            backgroundColor: theme.palette.mode == 'light' ? '#F1EEDC' : '#0C0C0C',
+            color: theme.palette.mode == 'dark' ? '#FFF' : '#000',
+            fontSize: 14,
+            position: 'sticky',
+            left: 0,
+            zIndex: theme.zIndex.appBar - 1,
+        },
+    };
+});
+
 export const StickyStyledTableCell = styled(TableCell)(({ theme }) => {
-    console.log('theme', theme);
     return {
         [`&.${tableCellClasses.head}`]: {
             backgroundColor: theme.palette.mode == 'light' ? '#F1EEDC' : '#0C0C0C',
             color: theme.palette.mode == 'dark' ? '#FFF' : '#000',
             position: 'sticky',
             right: 0,
-            zIndex: theme.zIndex.appBar + 1,
+            zIndex: theme.zIndex.appBar - 1,
         },
         [`&.${tableCellClasses.body}`]: {
             backgroundColor: theme.palette.mode == 'light' ? '#F1EEDC' : '#0C0C0C',
@@ -57,7 +77,7 @@ export const StickyStyledTableCell = styled(TableCell)(({ theme }) => {
             fontSize: 14,
             position: 'sticky',
             right: 0,
-            zIndex: theme.zIndex.appBar + 1,
+            zIndex: theme.zIndex.appBar - 1,
         },
     };
 });
@@ -152,12 +172,15 @@ export const UserList = () => {
                                         </TableCell>
                                         <TableCell align="right">
                                             <DeleteButtonIcon
-                                                disabled={row.roleName === 'ROLE_SUPER_ADMIN'}
+                                                disabled={
+                                                    row.roleName === 'ROLE_SUPER_ADMIN' ||
+                                                    row.id == getUserIdCurrently()
+                                                }
                                                 onDelete={() => {
                                                     deleteItem(row.id);
                                                 }}
                                             />
-                                            <Link
+                                            {/* <Link
                                                 to={
                                                     resource?.edit
                                                         ? resource?.edit?.toString().replace(':id', row.id)
@@ -169,7 +192,7 @@ export const UserList = () => {
                                                         <ManageAccounts />
                                                     </IconButton>
                                                 </Tooltip>
-                                            </Link>
+                                            </Link> */}
                                         </TableCell>
                                     </TableRow>
                                 ))

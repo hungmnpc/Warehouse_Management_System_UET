@@ -1,10 +1,10 @@
 package com.monopoco.history.service;
 
+import com.monopoco.common.model.HistoryEvent;
 import com.monopoco.history.entity.History;
 import com.monopoco.history.repository.HistoryRepository;
 import com.monopoco.history.response.CommonResponse;
 import com.monopoco.history.response.PageResponse;
-import com.monopoco.history.response.model.HistoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,15 +46,15 @@ public class HistoryServiceImpl implements HistoryService{
     }
 
     @Override
-    public CommonResponse<?> save(HistoryDTO historyDTO) {
+    public CommonResponse<?> save(HistoryEvent historyEvent) {
         History history = History.builder()
-                .type(historyDTO.getType())
-                .ts(Instant.now().getEpochSecond())
-                .title(historyDTO.getTitle())
-                .agentType(historyDTO.getAgentType())
-                .userId(historyDTO.getUser().getId().toString())
-                .description(historyDTO.getDescription())
-                .agentId(historyDTO.getAgentId().toString())
+                .type(historyEvent.getType())
+                .username(historyEvent.getUsername())
+                .userId(historyEvent.getUserId().toString())
+                .agentId(historyEvent.getAgentId().toString())
+                .agentType(historyEvent.getAgentType())
+                .content(historyEvent.getContent())
+                .ts(System.currentTimeMillis())
                 .build();
         historyRepository.save(history);
         return new CommonResponse<>().success().data("Success");
